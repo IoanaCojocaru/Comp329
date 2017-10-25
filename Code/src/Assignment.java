@@ -1,3 +1,8 @@
+/*
+ *  COMP329 Assignment 1
+ *  Main Assignment class
+ */
+
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
@@ -19,9 +24,7 @@ public class Assignment {
 	private static int xGridCount, yGridCount;
 	
 	private static OccupancyGridManager gridManager;
-	private static OccupancyGridCounter gridCounter;
-	
-	private static NXTUltrasonicSensor uSensor;
+
 	private static Brick myEV3;
 	private static GraphicsLCD lcd;
 	
@@ -29,31 +32,30 @@ public class Assignment {
 	private static Socket client;
 	private static DataOutputStream dOut;
 	
+	private static PilotRobot pilotRobot;
+	private static PilotMonitor pilotMonitor;
+	
 	public static void main(String[] args) {
-		// Get grid size for occupancy grid + count
+		// Get grid size for occupancy grid + grid counter
 		xGridCount = DIMENSION_X / ROBOT_LENGTH;
 		yGridCount = DIMENSION_Y / ROBOT_WIDTH;
 		
+		// Initialise grid manager
 		gridManager = new OccupancyGridManager(xGridCount, yGridCount);
-		gridCounter = new OccupancyGridCounter(xGridCount, yGridCount);
 		
 		// Initialise robot objects
-		/*
-		PilotRobot me = new PilotRobot();		
-		PilotMonitor myMonitor = new PilotMonitor(me, 400);	
-
-		// Set up the behaviours for the Arbitrator and construct it.
-		Behavior b1 = new DriveForward(me);
-		Behavior b2 = new BackUp(me);
-		Behavior [] bArray = {b1, b2};
-		Arbitrator arby = new Arbitrator(bArray);
-		*/
-		
 		myEV3 = BrickFinder.getDefault();
 		lcd = myEV3.getGraphicsLCD();
-
-		uSensor = new NXTUltrasonicSensor(myEV3.getPort("S3"));
+		pilotRobot = new PilotRobot(myEV3);
+		pilotMonitor = new PilotMonitor(pilotRobot, 400);
 		
+		// Create behaviours and an arbitrator
+		Behavior navigateObstacle = new BehaviourNavigateObstacle(pilotRobot);
+		
+		Behavior[] behaviours = {navigateObstacle};
+		
+		Arbitrator arbitrator = new Arbitrator(behaviours);
+
 		try {
 			server = new ServerSocket(1234);
 			//System.out.println("Awaiting client..");
@@ -64,6 +66,9 @@ public class Assignment {
 		} catch(Exception e) {
 			
 		}
+		
+		// Start arbitrator
+		//arbitrator.go();
 		
 		
 		String row;
@@ -76,7 +81,7 @@ public class Assignment {
 			if(Button.ESCAPE.isDown())
 				break;
 		
-			float sensorReading = checkSensor();
+			float sensorReading = pilotRobot.getUltrasonicSensor();
 			
 			// Convert sensor reading to int
 			if(sensorReading < Float.POSITIVE_INFINITY) {
@@ -93,7 +98,6 @@ public class Assignment {
 				
 				if(gridCell >= 0 && gridCell < xGridCount) {
 					gridManager.updateGridValue(gridCell, 0, 1);
-					gridCounter.updateGridValue(gridCell, 0);
 				}
 				
 				lcd.clear();
@@ -115,8 +119,8 @@ public class Assignment {
 			row = "";
 			
 			for(int j = 0; j < yGridCount; j++) {
-				if(gridCounter.getGridValue(i, j) > 0)
-					gridVal = gridManager.getGridValue(i, j) / gridCounter.getGridValue(i, j);
+				if(gridManager.getGridCounterValue(i, j) > 0)
+					gridVal = gridManager.getGridValue(i, j) / gridManager.getGridCounterValue(i, j);
 				else
 					gridVal = 0;
 				
@@ -137,13 +141,21 @@ public class Assignment {
 		
 	}
 	
-	private static float checkSensor() {
-		SampleProvider distSP = uSensor.getDistanceMode();
-
-		float[] distSample = new float[distSP.sampleSize()]; // Size is 1
+	// Does the next grid cell contain an obstacle?
+	public static boolean nextGridContainsObstacle() {
+		// Get current grid value
+		return false;
+	}
+	
+	// Have we completed the occupancy grid?
+	public static boolean isMapFinished() {
+		for(int i = 0; i < xGridCount; i++) {
+			for(int j = 0; j < yGridCount; j++) {
+				if(gridManager.getGridCounterValue(i, j) == 0)
+					return false;
+			}
+		}
 		
-		distSP.fetchSample(distSample, 0);
-
-		return distSample[0];
+		return true;
 	}
 }
