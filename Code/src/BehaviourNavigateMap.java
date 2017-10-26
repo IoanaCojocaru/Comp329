@@ -22,16 +22,29 @@ public class BehaviourNavigateMap implements Behavior {
 
 	// Check if the map has been completed or not
 	public boolean takeControl(){
-		if(!Assignment.isMapFinished())
+		if(!Assignment.isMapFinished()) {
+			Assignment.printMessage("Moving...");
 			return true;
-		else
+		} else {
+			Assignment.printMessage("Map is finished");
 			return false;
+		}
 	}
 
 	// Perform action to navigate map
 	public void action() {
 		// Allow this method to run
-		//suppressed = false;
+		suppressed = false;
+		
+		pilotRobot.getPilot().travel(Assignment.ROBOT_LENGTH);
+		while(!suppressed && pilotRobot.getPilot().isMoving()) {
+			Thread.yield();
+		}
+		
+		// Scan
+		Assignment.scanWithSensor();
+		
+		pilotRobot.getPilot().stop();
 		
 	}
 }

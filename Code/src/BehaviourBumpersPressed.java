@@ -1,17 +1,17 @@
 /*
  *  COMP329 Assignment 1
- *  Obstacle navigation behaviour
- *  Activates if robot encounters obstacle
+ *  Bumpers pressed behaviour
+ *  Activates if robot's front bumpers are pressed
  */
 
 import lejos.robotics.subsumption.Behavior;
 
-public class BehaviourNavigateObstacle implements Behavior {
+public class BehaviourBumpersPressed implements Behavior {
 	public boolean suppressed;
 	private PilotRobot pilotRobot;
 
 	// Constructor
-	public BehaviourNavigateObstacle(PilotRobot robot){
+	public BehaviourBumpersPressed(PilotRobot robot){
     	 this.pilotRobot = robot;
     }
 
@@ -20,9 +20,9 @@ public class BehaviourNavigateObstacle implements Behavior {
 		suppressed = true;
 	}
 
-	// Check if the next grid tile has an obstacle in
+	// Check if the bumpers are pressed
 	public boolean takeControl(){
-		if(Assignment.nextGridContainsObstacle())
+		if(pilotRobot.isLeftBumperPressed() || pilotRobot.isRightBumperPressed())
 			return true;
 		else
 			return false;

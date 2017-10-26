@@ -16,8 +16,11 @@ public class OccupancyGridManager {
 	
 	// Update a specified grid tile value
 	public void updateGridValue(int x, int y, int value) {
-		if(grid.length > x) {
-			if(grid[x].length > y) {
+		if(x >= 0 && grid.length > x) {
+			if(y >= 0 && grid[x].length > y) {
+				for(int i = 0; i < x; i++) {
+					counter.updateGridValue(i, y);
+				}
 				grid[x][y] += value;
 				counter.updateGridValue(x, y);
 			}
@@ -26,8 +29,8 @@ public class OccupancyGridManager {
 	
 	// Get a specified grid tile value
 	public int getGridValue(int x, int y) {
-		if(grid.length > x)
-			if(grid[x].length > y)
+		if(x >= 0 && grid.length > x)
+			if(y >= 0 && grid[x].length > y)
 				return grid[x][y];
 		
 		return -1;
@@ -35,8 +38,8 @@ public class OccupancyGridManager {
 	
 	// Get a specified grid tile counter value
 	public int getGridCounterValue(int x, int y) {
-		if(grid.length > x)
-			if(grid[x].length > y)
+		if(x >= 0 && grid.length > x)
+			if(y >= 0 && grid[x].length > y)
 				return counter.getGridValue(x, y);
 		
 		return -1;

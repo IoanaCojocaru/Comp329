@@ -1,9 +1,10 @@
 
 import lejos.hardware.Brick;
-import lejos.hardware.motor.Motor;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.motor.EV3MediumRegulatedMotor;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3TouchSensor;
-import lejos.hardware.sensor.NXTUltrasonicSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.chassis.Chassis;
 import lejos.robotics.chassis.Wheel;
 import lejos.robotics.chassis.WheeledChassis;
@@ -15,9 +16,10 @@ public class PilotRobot {
 	private MovePilot pilot;
 	private SampleProvider leftBumperSampleProvider, rightBumperSampleProvider, ultrasonicSensorSampleProvider, colourSensorSampleProvider;
 	private float[] leftBumperSample, rightBumperSample, ultrasonicSensorSample, colourSensorSample; 
-	private NXTUltrasonicSensor ultrasonicSensor;
+	private EV3UltrasonicSensor ultrasonicSensor;
 	private EV3TouchSensor leftBumper, rightBumper;
 	private EV3ColorSensor colourSensor;
+	private EV3MediumRegulatedMotor ultrasonicSensorMotor;
 	
 	// Constructor
 	public PilotRobot(Brick robot) {
@@ -26,7 +28,7 @@ public class PilotRobot {
 		// Get sensors
 		this.leftBumper = new EV3TouchSensor(myEV3.getPort("S2"));
 		this.rightBumper = new EV3TouchSensor(myEV3.getPort("S1"));
-		this.ultrasonicSensor = new NXTUltrasonicSensor(myEV3.getPort("S3"));
+		this.ultrasonicSensor = new EV3UltrasonicSensor(myEV3.getPort("S3"));
 		this.colourSensor = new EV3ColorSensor(myEV3.getPort("S4"));
 
 		// Initialise sensor sample providers
@@ -42,8 +44,12 @@ public class PilotRobot {
 		ultrasonicSensorSample = new float[ultrasonicSensorSampleProvider.sampleSize()];
 		
 		// Initialise wheels and create chassis
-		Wheel leftWheel = WheeledChassis.modelWheel(Motor.B, 3.3).offset(-10.0);
-		Wheel rightWheel = WheeledChassis.modelWheel(Motor.C, 3.3).offset(10.0);
+		EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(myEV3.getPort("B"));
+		EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(myEV3.getPort("C"));
+		ultrasonicSensorMotor = new EV3MediumRegulatedMotor(myEV3.getPort("A"));
+		
+		Wheel leftWheel = WheeledChassis.modelWheel(leftMotor, 3.3).offset(-10.0);
+		Wheel rightWheel = WheeledChassis.modelWheel(rightMotor, 3.3).offset(10.0);
 		Chassis chassis = new WheeledChassis( new Wheel[]{leftWheel, rightWheel}, WheeledChassis.TYPE_DIFFERENTIAL);
 		
 		// Initialise move pilot with the chassis
@@ -67,10 +73,36 @@ public class PilotRobot {
     	colourSensorSampleProvider.fetchSample(colourSensorSample, 0);
     	return colourSensorSample;
 	}
-	
+
 	// Get ultrasonic reading
 	public float getUltrasonicSensor() {
 		ultrasonicSensorSampleProvider.fetchSample(ultrasonicSensorSample, 0);
+		return ultrasonicSensorSample[0];
+	}
+	
+	// Get ultrasonic reading to the right
+	public float getUltrasonicSensorRight() {
+		// Rotate sensor by 90
+		ultrasonicSensorMotor.rotate(90);
+		
+		ultrasonicSensorSampleProvider.fetchSample(ultrasonicSensorSample, 0);
+
+		// Rotate back to 0
+		ultrasonicSensorMotor.rotate(-90);
+		
+		return ultrasonicSensorSample[0];
+	}
+	
+	// Get ultrasonic reading to the left
+	public float getUltrasonicSensorLeft() {
+		// Rotate sensor by -90
+		ultrasonicSensorMotor.rotate(-90);
+		
+		ultrasonicSensorSampleProvider.fetchSample(ultrasonicSensorSample, 0);
+		
+		// Rotate back to 0
+		ultrasonicSensorMotor.rotate(90);
+		
 		return ultrasonicSensorSample[0];
 	}
 	
