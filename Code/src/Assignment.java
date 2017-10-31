@@ -214,14 +214,37 @@ public class Assignment {
 		float sensorReading = pilotRobot.getUltrasonicSensor();
 		String row;
 		int gridVal;
-		
+
 		// Convert sensor reading to int
 		if(sensorReading < Float.POSITIVE_INFINITY) {
+			Pose pose = opp.getPose();
+			
+			float x = pose.getX();
+			float y = pose.getY();
+			float h = pose.getHeading();
+			
+			int posX = (int) (x / ROBOT_LENGTH);
+			int posY = (int) (y / ROBOT_LENGTH);
+			
 			int sensorReadingInt = (int) (sensorReading * 100);
-			int gridCell = sensorReadingInt / ROBOT_LENGTH;
+			int sensorReadingCell = sensorReadingInt / ROBOT_LENGTH; // Get number of cells away from robot obstacle has been detected in
 
-			if(gridCell >= 0 && gridCell < xGridCount) {
-				gridManager.updateGridValue(gridCell, 0, 1);
+			if(h >= 45 && h < 135) {
+				// Facing right from original position
+				posY += sensorReadingCell;
+			} else if(h >= 135 && h < 225) {
+				// Facing back towards original position
+				posX -= sensorReadingCell;
+			} else if(h >= 225 && h < 315) {
+				// Facing left
+				posY -= sensorReadingCell;
+			} else {
+				// Facing forwards
+				posX += sensorReadingCell;
+			}
+
+			if(posX >= 0 && posY >= 0 && posX < xGridCount && posY < yGridCount) {
+				gridManager.updateGridValue(posX, posY, 1);
 			}
 			
 			lcd.clear();
