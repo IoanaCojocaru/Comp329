@@ -41,9 +41,9 @@ public class Assignment {
 	
 	public static void main(String[] args) {
 		// Get grid size for occupancy grid + grid counter
-		xGridCount = DIMENSION_X / ROBOT_LENGTH;
+		xGridCount = DIMENSION_Y / ROBOT_WIDTH;
 		//yGridCount = DIMENSION_Y / ROBOT_WIDTH;
-		yGridCount = DIMENSION_Y / ROBOT_LENGTH;
+		yGridCount = DIMENSION_X / ROBOT_LENGTH;
 		
 		// Initialise grid manager
 		gridManager = new OccupancyGridManager(xGridCount, yGridCount);
@@ -66,8 +66,6 @@ public class Assignment {
 		Behavior[] behaviours = {navigateMap, navigateObstacle, bumpersPressed};
 		
 		Arbitrator arbitrator = new Arbitrator(behaviours);
-		
-		lcd.clear();
 
 		/*
 		try {
@@ -81,16 +79,9 @@ public class Assignment {
 			
 		} */
 		
-		
-		//gridManager.drawMap(); //G.R
+		gridManager.drawMap(); //G.R
 		Button.waitForAnyPress();
-		lcd.clear();
-		//gridManager.drawMap();
-		
-		// Run initial ultrasonic sensor scan
-		//
-		scanWithSensor();
-		
+
 		// Start arbitrator
 		arbitrator.go();
 		
@@ -262,10 +253,11 @@ public class Assignment {
 						gridVal = gridManager.getGridValue(i, j);
 						row += " " + gridVal;
 					}
-					
-					lcd.drawString(row, 0, ((yGridCount - i) * 10), 0);
+					lcd.clear();
+					//lcd.drawString(row, 0, ((yGridCount - i) * 10), 0);
 				}
-			}
+			}                                                                                                                                                            lcd.clear();
+			gridManager.updateMap();
 		}
 	
 		
@@ -276,7 +268,7 @@ public class Assignment {
 			if(sensorReading < Float.POSITIVE_INFINITY) {
 				int sensorReadingInt = (int) (sensorReading * 100);
 				
-				if(sensorReadingInt <= ROBOT_LENGTH)
+				if(sensorReadingInt<= ROBOT_LENGTH)
 					return false;
 			}
 			

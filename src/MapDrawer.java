@@ -13,10 +13,10 @@ public class MapDrawer  {
 	public void initMap(int [][]map) {
 		r = 0;
 		t = 0;
-
-		for (int i = 0; i < map.length; i++) {
-			r = 0;
-			for (int j = 0; j < map[0].length; j++) {
+		
+		for (int i = 0; i < 5; i++) {
+			r = 0;		
+			for (int j = 0; j < 6; j++) {
 				
 				lcd.drawRect(j+r, i + t, 20, 20);
 				
@@ -41,18 +41,19 @@ public class MapDrawer  {
 		r = 0;
 		t = 0;
 
-		for (int i = 0; i < map.length; i++) {
-			r = 0;
-			for (int j = 0; j < map[0].length; j++) {
+		for (int i = 0; i < 5; i++) {
+			r = 0;		
+			for (int j = 0; j < 6; j++) {
 				
 				if (map[i][j] != 0)
 					lcd.fillRect(j+r, i + t, 20, 20);
 				else
-					lcd.drawRect(j+r, i + t,20, 20);
+					lcd.drawRect(j+r, i + t, 20, 20);	
 				
-				r = r + 20;			
+				
+				r = r + 20;	//Set space between the rows		
 			}	
-			t = t + 20;
+			t = t + 20; //Set space between the columns
 		}
 	}
 }

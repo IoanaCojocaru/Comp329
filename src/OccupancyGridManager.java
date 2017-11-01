@@ -6,7 +6,7 @@
 public class OccupancyGridManager {
 	private int[][] grid;
 	private OccupancyGridCounter counter;
-	private static MapDrawer map; //G.R
+	MapDrawer map = new MapDrawer();//G.R
 	
 	// Constructor
 	public OccupancyGridManager(int xGridCount, int yGridCount) {
@@ -49,8 +49,17 @@ public class OccupancyGridManager {
 	public void drawMap() { //G.R
 		map.initMap(grid);
 	}
-	
-	public void finalMap() { //G.R
+	public void updateMap() { //G.R
 		map.printMap(grid);
+	}
+	
+	//For test purposes
+	public void printgrid() {
+		for (int i = 0; i < grid.length; i++) {
+			for (int j = 0; j < grid[0].length; j++) {
+				System.out.print(grid[i][j]);		
+			}	
+			System.out.print("\n");	
+		}
 	}
 }

@@ -30,7 +30,7 @@ public class BehaviourNavigateObstacle implements Behavior {
 
 	// Perform action to navigate obstacle
 	public void action() {
-		
+			
 		pilotRobot.getPilot().stop();
 		
 		// Allow this method to run

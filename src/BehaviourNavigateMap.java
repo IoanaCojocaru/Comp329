@@ -4,7 +4,6 @@
  *  Navigates the map to generate occupancy grid + visual map
  */
 
-import lejos.hardware.lcd.LCD;
 import lejos.robotics.subsumption.Behavior;
 
 public class BehaviourNavigateMap implements Behavior {
@@ -39,7 +38,8 @@ public class BehaviourNavigateMap implements Behavior {
 		
 		pilotRobot.getPilot().stop();
 		
-		// Scan
+		Assignment.scanWithSensor();
+
 		Assignment.canGoForward();
 		
 		pilotRobot.getPilot().travel(Assignment.ROBOT_LENGTH);

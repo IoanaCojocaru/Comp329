@@ -32,8 +32,6 @@ public class BehaviourBumpersPressed implements Behavior {
 	// Perform action to navigate obstacle
 	public void action() {
 		
-		Assignment.scanWithSensor();
-		
 		pilotRobot.getPilot().stop();
 		
 		// Allow this method to run
