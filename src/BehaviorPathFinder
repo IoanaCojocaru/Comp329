@@ -1,0 +1,77 @@
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.robotics.Color;
+import lejos.robotics.SampleProvider;
+import lejos.robotics.pathfinding.Path;
+import lejos.robotics.subsumption.Behavior;
+
+public class BehaviorPathFinder implements Behavior {
+	
+	public boolean suppressed;
+	// Constructor
+	public void BehaviourPathFinder(PilotRobot robot){
+    }
+	
+	// Finish the action
+	public void suppress(){
+		suppressed = true;
+	}
+	
+	// Create sensor
+    Port port = LocalEV3.get().getPort("S3");
+    EV3ColorSensor sensor = new EV3ColorSensor(port);
+
+    // Use ColorID Mode
+    SampleProvider provider = sensor.getMode("ColorID");
+
+    // To store data
+    float sample[] = new float[provider.sampleSize()];
+    
+    @Override
+	public boolean takeControl(){
+    	
+		int colorValue = getColorID(); 
+		Thread.yield();
+
+		if (colorValue != Color.BLUE) 
+			return false;
+		else if (colorValue == Color.BLUE) {
+
+		// cum sa scot coordonatele?? 	
+			double xCoordinate = getX();
+			double yCoordinate = getY();
+			
+			Waypoint goal = new Waypoint(xCoordinate, yCoordinate);
+			return true;
+		}
+		return suppressed; 
+	}
+
+   
+    
+	private double getY() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private double getX() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	private static int getColorID() {
+		// 
+		return 0;
+	}
+
+	
+
+	@Override
+	public void action() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+}
